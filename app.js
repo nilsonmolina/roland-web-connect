@@ -13,7 +13,8 @@ var BluetoothController = (function() {
     
   function beginPairing(){
     navigator.bluetooth.requestDevice({
-      acceptAllDevices: true
+      acceptAllDevices: true,
+      optionalServices: ['generic_access']
     }).then(device => {
       // Human-readable name of the device.
       console.log(device.name);
