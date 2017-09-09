@@ -57,18 +57,16 @@ var BluetoothController = (function() {
   function beginPairing(){      
     navigator.bluetooth.requestDevice({
       acceptAllDevices: true,
-      optionalService: ['human_interface_device']
+      optionalService: ['human_interface_device', 0x1812]
     })
     .then(device => {
-      // Human-readable name of the device.
-      outputResults(device.name);
-      // Attempts to connect to remote GATT Server.
+      outputResults("successfully paired with: " + device.name);
       return device.gatt.connect();
     })
-//    .then(server => {
-//      // Getting Human Interface Device Service...
-//      return server.getPrimaryService(0x1812);
-//    })
+    .then(server => {
+      // Getting Human Interface Device Service...
+      return server.getPrimaryService(0x1812);
+    })
 //    .then(service => {
 //      // Getting Report Characteristic...
 //      return service.getCharacteristic('report');
