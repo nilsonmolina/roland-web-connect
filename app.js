@@ -8,6 +8,7 @@ var BluetoothController = (function() {
 
   var bindDomEvents = function() {
     dom.button.addEventListener('click', function() {
+      beginPairing();
       connectMidiDevice();
     });
   };
@@ -49,19 +50,18 @@ var BluetoothController = (function() {
     }
   };
     
-//  function beginPairing(){
-//      
-//    navigator.bluetooth.requestDevice({
-//      filters: [{
-//        services: [0x1812, 'human_interface_device']
-//      }]
-//    })
-//    .then(device => {
-//      // Human-readable name of the device.
-//      outputResults(device.name);
-//      // Attempts to connect to remote GATT Server.
-//      return device.gatt.connect();
-//    })
+  function beginPairing(){      
+    navigator.bluetooth.requestDevice({
+      filters: [{
+        services: ['generic_access']
+      }]
+    })
+    .then(device => {
+      // Human-readable name of the device.
+      outputResults(device.name);
+      // Attempts to connect to remote GATT Server.
+      return device.gatt.connect();
+    })
 //    .then(server => {
 //      // Getting Human Interface Device Service...
 //      return server.getPrimaryService(0x1812);
@@ -78,8 +78,8 @@ var BluetoothController = (function() {
 //      outputResults('all: ' + value);
 //      outputResults('the report is: ' + value.getUint8(0));
 //    })
-//    .catch(error => { outputResults(error); });
-//  };
+    .catch(error => { outputResults(error); });
+  };
     
   var outputResults = function(result) {
     var row = dom.table.getElementsByTagName('tbody')[0].insertRow(0);
