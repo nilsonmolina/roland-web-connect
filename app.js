@@ -4,10 +4,29 @@ var BluetoothController = (function() {
     button: document.getElementById('button'),
     widget: document.getElementById('widget')
   };
+  var input, output;
 
-  var bindEvents = function() {
+  var bindDomEvents = function() {
     dom.button.addEventListener('click', function() {
-      enableWebMidi();
+      connectMidiDevice();
+    });
+  };
+  
+  var bindMidiEvents = function() {
+    //Listen for note presses
+    input.addListener('noteon', "all", function(e) {
+        outputResults("note value: " + e.note.name + e.note.octave);
+    });
+    
+    //Listen for device disconnection
+    WebMidi.addListener('disconnected', function(e) {
+      if(e.id === input.id){
+        input.removeListener();
+        WebMidi.removeListener();
+        outputResults('disconnected!');
+      } else {
+        console.log('disconnected event fired, but not same id')
+      }
     });
   };
     
@@ -15,47 +34,52 @@ var BluetoothController = (function() {
     WebMidi.enable(function (err) {
       if (err) {
         outputResults("WebMidi could not be enabled: ", err);
-      } else {
-        outputResults("WebMidi enabled!");
-      }
-      
-      outputResults("inputs: " + WebMidi.inputs);
-      outputResults("outputs: " + WebMidi.outputs);
-      
+      }      
     });
   };
-    
-  function beginPairing(){
-      
-    navigator.bluetooth.requestDevice({
-      filters: [{
-        services: [0x1812, 'human_interface_device']
-      }]
-    })
-    .then(device => {
-      // Human-readable name of the device.
-      outputResults(device.name);
-      // Attempts to connect to remote GATT Server.
-      return device.gatt.connect();
-    })
-    .then(server => {
-      // Getting Human Interface Device Service...
-      return server.getPrimaryService(0x1812);
-    })
-    .then(service => {
-      // Getting Report Characteristic...
-      return service.getCharacteristic('report');
-    })
-    .then(characteristic => {
-      // Reading Report...
-      return characteristic.readValue();
-    })
-    .then(value => {
-      outputResults('all: ' + value);
-      outputResults('the report is: ' + value.getUint8(0));
-    })
-    .catch(error => { outputResults(error); });
+  
+  function connectMidiDevice() {
+    if (WebMidi.inputs.length < 1){
+      outputResults("No MIDI device found. Please connect one and try again.")
+    } else {
+      input = WebMidi.inputs[0];
+      output = WebMidi.outputs[0];
+      outputResults("connected to: " + input.name);
+      bindMidiEvents();
+    }
   };
+    
+//  function beginPairing(){
+//      
+//    navigator.bluetooth.requestDevice({
+//      filters: [{
+//        services: [0x1812, 'human_interface_device']
+//      }]
+//    })
+//    .then(device => {
+//      // Human-readable name of the device.
+//      outputResults(device.name);
+//      // Attempts to connect to remote GATT Server.
+//      return device.gatt.connect();
+//    })
+//    .then(server => {
+//      // Getting Human Interface Device Service...
+//      return server.getPrimaryService(0x1812);
+//    })
+//    .then(service => {
+//      // Getting Report Characteristic...
+//      return service.getCharacteristic('report');
+//    })
+//    .then(characteristic => {
+//      // Reading Report...
+//      return characteristic.readValue();
+//    })
+//    .then(value => {
+//      outputResults('all: ' + value);
+//      outputResults('the report is: ' + value.getUint8(0));
+//    })
+//    .catch(error => { outputResults(error); });
+//  };
     
   var outputResults = function(result) {
     var row = dom.table.getElementsByTagName('tbody')[0].insertRow(0);
@@ -69,7 +93,8 @@ var BluetoothController = (function() {
 
   return {
     init: function() {
-      bindEvents();
+      bindDomEvents();
+      enableWebMidi();
       setTimeout(function(){
           dom.widget.classList.toggle('hidden');
       }, 250);
