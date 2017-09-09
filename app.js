@@ -12,19 +12,48 @@ var BluetoothController = (function() {
   };
     
   function beginPairing(){
+      
     navigator.bluetooth.requestDevice({
       acceptAllDevices: true,
-      optionalServices: ['generic_access']
-    }).then(device => {
+      optionalServices: ['human_interface_device']
+    })
+    .then(device => {
       // Human-readable name of the device.
-      console.log(device.name);
       outputResults(device.name);
       // Attempts to connect to remote GATT Server.
       return device.gatt.connect();
-      })
-    .then(server => { /* ... */ })
-    .catch(error => { console.log(error); });
-  }
+    })
+    .then(server => {
+      // Getting Human Interface Device Service...
+      return server.getPrimaryService('human_interface_device');
+    })
+    .then(service => {
+      // Getting Report Characteristic...
+      return service.getCharacteristic('report');
+    })
+    .then(characteristic => {
+      // Reading Report...
+      return characteristic.readValue();
+    })
+    .then(value => {
+      outputResults('all: ' + value);
+      outputResults('the report is: ' + value.getUint8(0));
+    })
+    .catch(error => { outputResults(error); });
+  };
+    
+//    .then(characteristic => {
+//      // Set up event listener for when characteristic value changes.
+//      characteristic.addEventListener('characteristicvaluechanged',
+//                                  handleReportChanged);
+//      // Reading Battery Level...
+//      return characteristic.readValue();
+//    })
+    
+//  function handleBatteryLevelChanged(event) {
+//    let batteryLevel = event.target.value.getUint8(0);
+//    console.log('Battery percentage is ' + batteryLevel);
+//  }
     
   var outputResults = function(result) {
     var row = dom.table.getElementsByTagName('tbody')[0].insertRow(0);
