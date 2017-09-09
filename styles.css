@@ -140,6 +140,10 @@ body {
   #widget .small {
       max-width: 200px;
   }
+  #widget .caveat {
+    display: block;
+    margin-bottom: 10px;
+  }
   #widget input, #widget button {
       display: block;
       margin: 5px 0;

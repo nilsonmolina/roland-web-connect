@@ -7,7 +7,21 @@ var BluetoothController = (function() {
 
   var bindEvents = function() {
     dom.button.addEventListener('click', function() {
-      beginPairing();
+      enableWebMidi();
+    });
+  };
+    
+  function enableWebMidi(){
+    WebMidi.enable(function (err) {
+      if (err) {
+        outputResults("WebMidi could not be enabled: ", err);
+      } else {
+        outputResults("WebMidi enabled!");
+      }
+      
+      outputResults("inputs: " + WebMidi.inputs);
+      outputResults("outputs: " + WebMidi.outputs);
+      
     });
   };
     
@@ -42,19 +56,6 @@ var BluetoothController = (function() {
     })
     .catch(error => { outputResults(error); });
   };
-    
-//    .then(characteristic => {
-//      // Set up event listener for when characteristic value changes.
-//      characteristic.addEventListener('characteristicvaluechanged',
-//                                  handleReportChanged);
-//      // Reading Battery Level...
-//      return characteristic.readValue();
-//    })
-    
-//  function handleBatteryLevelChanged(event) {
-//    let batteryLevel = event.target.value.getUint8(0);
-//    console.log('Battery percentage is ' + batteryLevel);
-//  }
     
   var outputResults = function(result) {
     var row = dom.table.getElementsByTagName('tbody')[0].insertRow(0);
