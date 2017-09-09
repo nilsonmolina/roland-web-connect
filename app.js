@@ -67,18 +67,18 @@ var BluetoothController = (function() {
       // Getting Human Interface Device Service...
       return server.getPrimaryService(0x1812);
     })
-//    .then(service => {
-//      // Getting Report Characteristic...
-//      return service.getCharacteristic('report');
-//    })
-//    .then(characteristic => {
-//      // Reading Report...
-//      return characteristic.readValue();
-//    })
-//    .then(value => {
-//      outputResults('all: ' + value);
-//      outputResults('the report is: ' + value.getUint8(0));
-//    })
+    .then(service => {
+      // Getting Protocol Mode...
+      return service.getCharacteristic('protocol_mode');
+    })
+    .then(characteristic => {
+      // Reading Report...
+      return characteristic.readValue();
+    })
+    .then(value => {
+      outputResults('all: ' + value);
+      outputResults('the protocol mode is: ' + value.getUint8(0));
+    })
     .catch(error => { outputResults(error); });
   };
     
