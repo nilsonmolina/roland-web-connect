@@ -14,8 +14,9 @@ var BluetoothController = (function() {
   function beginPairing(){
       
     navigator.bluetooth.requestDevice({
-      acceptAllDevices: true,
-      optionalServices: ['human_interface_device']
+      filters: [{
+        services: [0x1812, 'human_interface_device']
+      }]
     })
     .then(device => {
       // Human-readable name of the device.
@@ -25,7 +26,7 @@ var BluetoothController = (function() {
     })
     .then(server => {
       // Getting Human Interface Device Service...
-      return server.getPrimaryService('human_interface_device');
+      return server.getPrimaryService(0x1812);
     })
     .then(service => {
       // Getting Report Characteristic...

@@ -29,13 +29,18 @@ body {
 }
 #widget h2 {
     color: #02b3e4;
-    margin-top: -10px;
+    margin-top: 10px;
     margin-bottom: 0;
 }
 #widget .small {
     font-size: 0.9rem;
     max-width: 600px;
     margin-bottom: 10px;
+}
+#widget .caveat {
+    color: #525c65;
+    vertical-align: middle;
+    font-size: 0.7rem;
 }
 #widget input {
     text-transform: capitalize;
