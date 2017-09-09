@@ -1,14 +1,18 @@
 var BluetoothController = (function() {
   var dom = {
     table: document.getElementById('resultsTable'),
-    button: document.getElementById('button'),
+    btnPair: document.getElementById('btnBluetooth'),
+    btnConnect: document.getElementById('btnMidi'),
     widget: document.getElementById('widget')
   };
   var input, output;
 
   var bindDomEvents = function() {
-    dom.button.addEventListener('click', function() {
+    dom.btnPair.addEventListener('click', function() {
       beginPairing();
+    });
+    
+    dom.btnConnect.addEventListener('click', function() {
       connectMidiDevice();
     });
   };
@@ -52,9 +56,8 @@ var BluetoothController = (function() {
     
   function beginPairing(){      
     navigator.bluetooth.requestDevice({
-      filters: [{
-        services: ['generic_access']
-      }]
+      acceptAllDevices: true,
+      optionalService: ['human_interface_device']
     })
     .then(device => {
       // Human-readable name of the device.
