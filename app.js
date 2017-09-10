@@ -1,4 +1,4 @@
-var BluetoothController = (function() {
+var WebMidiController = (function() {
   var dom = {
     table: document.getElementById('resultsTable'),
     btnPair: document.getElementById('btnBluetooth'),
@@ -16,11 +16,10 @@ var BluetoothController = (function() {
       connectMidiDevice();
     });
   };
-  
   var bindMidiEvents = function() {
     //Listen for note presses
     input.addListener('noteon', "all", function(e) {
-        outputResults("note value: " + e.note.name + e.note.octave);
+        log("note value: " + e.note.name + e.note.octave);
     });
     
     //Listen for device disconnection
@@ -28,7 +27,7 @@ var BluetoothController = (function() {
       if(e.id === input.id){
         input.removeListener();
         WebMidi.removeListener();
-        outputResults('disconnected!');
+        log('disconnected!');
       } else {
         console.log('disconnected event fired, but not same id')
       }
@@ -38,18 +37,18 @@ var BluetoothController = (function() {
   function enableWebMidi(){
     WebMidi.enable(function (err) {
       if (err) {
-        outputResults("WebMidi could not be enabled: ", err);
+        log("WebMidi could not be enabled: ", err);
       }      
     });
   };
   
   function connectMidiDevice() {
     if (WebMidi.inputs.length < 1){
-      outputResults("No MIDI device found. Please connect one and try again.")
+      log("No MIDI device found. Please connect one and try again.")
     } else {
       input = WebMidi.inputs[0];
       output = WebMidi.outputs[0];
-      outputResults("connected to: " + input.name);
+      log("connected to: " + input.name);
       bindMidiEvents();
     }
   };
@@ -60,7 +59,7 @@ var BluetoothController = (function() {
       optionalService: ['human_interface_device', 0x1812]
     })
     .then(device => {
-      outputResults("successfully paired with: " + device.name);
+      log("successfully paired with: " + device.name);
       return device.gatt.connect();
     })
     .then(server => {
@@ -76,13 +75,13 @@ var BluetoothController = (function() {
       return characteristic.readValue();
     })
     .then(value => {
-      outputResults('all: ' + value);
-      outputResults('the protocol mode is: ' + value.getUint8(0));
+      log('all: ' + value);
+      log('the protocol mode is: ' + value.getUint8(0));
     })
-    .catch(error => { outputResults(error); });
+    .catch(error => { log(error); });
   };
     
-  var outputResults = function(result) {
+  var log = function(result) {
     var row = dom.table.getElementsByTagName('tbody')[0].insertRow(0);
 
     var cell1 = row.insertCell(0);
@@ -103,4 +102,4 @@ var BluetoothController = (function() {
   };
 })();
 
-BluetoothController.init();
+WebMidiController.init();
